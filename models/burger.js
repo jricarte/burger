@@ -1,44 +1,31 @@
-const orm = require("../config/orm");
+// Import the ORM
+var orm = require("../config/orm.js");
 
-function Burger(name) {
-    this.name = name;
-    this.devoured = false;
-}
+// create burger 
+var burger = {
+	
+	selectAll: function(cb) {
+		orm.selectAll('burgers', function(res) {
+			cb(res);
+		});
+	},
+	
 
-Burger.selectBurgers = function () {
-    return new Promise((resolve, reject) => {
-        orm.selectAll("BURGERS").then(results => {
-            resolve(results);
-        }).catch(() => {
-            reject("Could not retrieve burgers");
-        });
-    });
+
+	insertOne: function(cols, vals, cb) {
+		orm.insertOne('burgers', cols, vals, function(res) {
+			cb(res);
+		});
+	},
+	
+
+
+	updateOne: function(objColVals, condition, cb) {
+		orm.updateOne('burgers', objColVals, condition, function(res) {
+			cb(res);
+		});
+	}
 };
 
-Burger.create = function (burger) {
-    return new Promise((resolve, reject) => {
-        orm.insertOne("BURGERS", {
-            burger_name: burger.name,
-            devoured: burger.devoured
-        }).then(results => {
-            // Get db generated ID
-            burger.id = results.insertId;
-            resolve(burger.id);
-        }).catch(() => {
-            reject("Could not add burger");
-        });
-    });
-};
-
-Burger.updateDevoured = function (burgerId) {
-    return new Promise((resolve, reject) => {
-        orm.updateOne("BURGERS", "DEVOURERED", true, "ID", burgerId).then(results => {
-            resolve(results);
-        }).catch(() => {
-            reject("Could not update burger");
-        });
-    })
-};
-
-
-module.exports = Burger;
+// Export 
+module.exports = burger;
